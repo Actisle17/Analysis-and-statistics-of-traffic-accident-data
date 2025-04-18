@@ -1,0 +1,49 @@
+﻿//1. 5 giờ có số ca tử vong cao nhất
+SELECT
+	TOPCOUNT([Dim Times].[Crash Hours].MEMBERS,
+	5,[Measures].[Injuries Fatal]) ON COLUMNS,
+	[Measures].[Injuries Fatal] ON ROWS
+FROM [Star G11 Cube]
+
+//2. Tổng số bị thương, thiệt mạng, số xe liên quan theo tháng
+SELECT 
+    {[Measures].[Injuries Fatal], 
+     [Measures].[Injuries Total], 
+     [Measures].[Num Units] } ON COLUMNS, 
+    EXCEPT(
+        [Dim Times].[Crash Month].[Crash Month].MEMBERS, 
+        {[Dim Times].[Crash Month].[Unknown]}
+    ) ON ROWS
+FROM [Star G11 Cube]
+
+//3. Tổng số người bị thương, thiệt mạng, xe liên quan theo năm 
+SELECT 
+    [Dim Times].[Crash Year].[Crash Year] ON COLUMNS, 
+    {
+        [Measures].[Injuries Fatal], 
+        [Measures].[Injuries Total], 
+        [Measures].[Num Units]
+    } ON ROWS
+FROM [Star G11 Cube]
+
+//4. Tổng số xe liên quan, số người bị thương, 
+//số thương vong có yếu tố giao lộ
+SELECT 
+    {[Measures].[Num Units], 
+     [Measures].[Injuries Total], 
+     [Measures].[Injuries Fatal] } ON COLUMNS, 
+    [Dim Locations].[Intersection Related I].MEMBERS ON ROWS
+FROM [Star G11 Cube]
+
+//5. Tổng người bị thương, số xe liên quan theo điều kiện mặt đường
+SELECT
+	{[Measures].[Num Units], 
+     [Measures].[Injuries Total] } ON COLUMNS,
+[Dim Causes].[Roadway Surface Cond].MEMBERS ON ROWS
+FROM [Star G11 Cube]
+
+//6. Tổng số người bị thương theo loại va chạm đầu tiên
+SELECT [Measures].[Injuries Total] ON COLUMNS,
+		[Dim Crash Types].[First Crash Type].[First Crash Type] ON ROWS
+FROM [Star G11 Cube]
+
